@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>アトリエひなたぼっこ | チケット枚数管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- このバージョンはGoogleスプレッドシート(Apps Script経由)を使うため、外部SDKの読み込みは不要です -->
+<style>
+  :root{
+    --bg: #FFF7E6;
+    --bg-2: #FFEFCF;
+    --card: #FFFDF7;
+    --ink: #3B2E22;
+    --ink-soft: #7A6A56;
+    --sun: #F2A93B;
+    --sun-deep: #C7841F;
+    --leaf: #5B8C74;
+    --leaf-deep: #3E6752;
+    --coral: #E2694F;
+    --coral-deep: #A8422F;
+    --line: #EAD9B4;
+    --shadow: 0 2px 0 rgba(59,46,34,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    font-family:'Noto Sans JP', sans-serif;
+    color:var(--ink);
+    padding: 20px 14px 60px;
+  }
+  .wrap{max-width:640px; margin:0 auto;}
+
+  header{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    gap:10px; margin-bottom:18px;
+  }
+  .brand{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-weight:700;
+    font-size:1.15rem;
+    line-height:1.3;
+    color:var(--sun-deep);
+  }
+  .brand small{
+    display:block;
+    font-family:'Noto Sans JP', sans-serif;
+    font-weight:500;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+    margin-top:2px;
+  }
+  .sync{
+    display:flex; align-items:center; gap:6px;
+    font-size:0.72rem; color:var(--ink-soft);
+    background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:6px 10px;
+    white-space:nowrap;
+  }
+  .sync .dot{width:7px; height:7px; border-radius:50%; background:var(--leaf); flex-shrink:0;}
+  .sync.offline .dot{background:var(--coral);}
+
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---- setup screen ---- */
+  .setup-card{
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:22px 18px; box-shadow:var(--shadow);
+  }
+  .setup-card h1{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:1.05rem; margin:0 0 4px;
+  }
+  .setup-card p.desc{
+    margin:0 0 16px; font-size:0.85rem; color:var(--ink-soft); line-height:1.6;
+  }
+  .name-row{
+    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  }
+  .name-row .num{
+    width:24px; height:24px; border-radius:50%;
+    background:var(--sun); color:#fff; font-weight:700; font-size:0.75rem;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .name-row input[type="text"]{
+    flex:1 1 auto; min-width:0;
+    padding:10px 12px; border-radius:10px; border:1px solid var(--line);
+    background:#fff; font-size:0.92rem; color:var(--ink);
+    font-family:'Noto Sans JP', sans-serif;
+  }
+  .name-row .cap-wrap{
+    display:flex; align-items:center; gap:4px; flex-shrink:0;
+  }
+  .name-row input[type="number"]{
+    width:64px;
+    padding:10px 8px; border-radius:10px; border:1px solid var(--line);
+    background:#fff; font-size:0.92rem; color:var(--ink); text-align:center;
+    font-family:'Noto Sans JP', sans-serif;
+  }
+  .name-row .cap-unit{font-size:0.72rem; color:var(--ink-soft); flex-shrink:0;}
+  .name-row input:focus{outline:2px solid var(--sun); outline-offset:1px;}
+  .primary-btn{
+    width:100%; margin-top:6px; padding:14px; border:none; border-radius:12px;
+    background:var(--sun-deep); color:#fff; font-weight:700; font-size:1rem;
+    font-family:'Zen Maru Gothic', sans-serif; cursor:pointer;
+    box-shadow:0 3px 0 #96650f;
+  }
+  .primary-btn:active{transform:translateY(2px); box-shadow:0 1px 0 #96650f;}
+  .field-error{color:var(--coral-deep); font-size:0.78rem; margin-top:-2px; margin-bottom:10px; display:none;}
+  .field-error.show{display:block;}
+
+  /* ---- count screen ---- */
+  .totalbar{
+    display:flex; gap:10px; margin-bottom:14px;
+  }
+  .totalbar .box{
+    flex:1; background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:10px 14px; text-align:center;
+  }
+  .totalbar .box .lab{font-size:0.7rem; color:var(--ink-soft);}
+  .totalbar .box .val{font-family:'Zen Maru Gothic', sans-serif; font-size:1.4rem; font-weight:700; color:var(--sun-deep);}
+
+  .combo-btn{
+    width:100%; text-align:left; border:none; border-radius:16px;
+    padding:16px 18px; margin-bottom:16px; cursor:pointer;
+    background: var(--sun); color:#4A2E00;
+    box-shadow:0 3px 0 var(--sun-deep);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .combo-btn:active{transform:translateY(2px); box-shadow:0 1px 0 var(--sun-deep);}
+  .combo-btn .t1{font-family:'Zen Maru Gothic', sans-serif; font-weight:700; font-size:1.05rem;}
+  .combo-btn .t2{font-size:0.75rem; opacity:0.85; margin-top:2px;}
+  .combo-btn .arrow{font-size:1.4rem; font-weight:700;}
+  .combo-btn:disabled{
+    background:#E7DFC9; color:#93887a; box-shadow:none; cursor:not-allowed;
+  }
+  .combo-note{
+    font-size:0.78rem; color:var(--coral-deep); margin:-10px 0 16px; text-align:center;
+  }
+
+  .grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;
+  }
+  .event-card{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:14px; display:flex; flex-direction:column; gap:8px;
+    position:relative; overflow:hidden;
+  }
+  .event-card.full{border-color:var(--coral); background:#FFF3EF;}
+  .event-name{
+    font-family:'Zen Maru Gothic', sans-serif; font-weight:700; font-size:0.95rem;
+    line-height:1.3; min-height:2.4em; word-break:break-word;
+  }
+  .event-count{
+    font-family:'Zen Maru Gothic', sans-serif; font-size:1.5rem; font-weight:700;
+    color:var(--leaf-deep); line-height:1;
+  }
+  .event-count small{font-size:0.8rem; font-weight:500; color:var(--ink-soft);}
+  .event-remain{font-size:0.75rem; color:var(--ink-soft);}
+  .event-card.full .event-remain{color:var(--coral-deep); font-weight:700;}
+  .single-btn{
+    margin-top:auto; border:none; border-radius:10px; padding:11px;
+    background:var(--leaf); color:#fff; font-weight:700; font-size:0.9rem;
+    font-family:'Zen Maru Gothic', sans-serif; cursor:pointer;
+    box-shadow:0 2px 0 var(--leaf-deep);
+  }
+  .single-btn:active{transform:translateY(2px); box-shadow:none;}
+  .single-btn:disabled{background:#DCD5C4; color:#93887a; box-shadow:none; cursor:not-allowed;}
+  .edit-count-btn{
+    border:none; background:none; padding:2px 0; margin:0;
+    color:var(--ink-soft); font-size:0.72rem; text-decoration:underline;
+    cursor:pointer; font-family:'Noto Sans JP', sans-serif; align-self:flex-start;
+  }
+  .done-badge{
+    position:absolute; top:10px; right:10px;
+    background:var(--coral); color:#fff; font-size:0.66rem; font-weight:700;
+    padding:3px 8px; border-radius:999px;
+  }
+
+  .controls{
+    display:flex; gap:10px; margin-top:6px;
+  }
+  .ghost-btn{
+    flex:1; padding:12px; border-radius:12px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); font-size:0.82rem; font-weight:500;
+    cursor:pointer; font-family:'Noto Sans JP', sans-serif;
+  }
+  .ghost-btn:disabled{color:#b3a893; cursor:not-allowed;}
+  .ghost-btn.warn{color:var(--coral-deep); border-color:var(--coral);}
+  .last-action{
+    text-align:center; font-size:0.75rem; color:var(--ink-soft); margin-top:10px;
+  }
+
+  .loading{
+    text-align:center; padding:60px 0; color:var(--ink-soft); font-size:0.9rem;
+  }
+  .config-warning{
+    background:#FFF3EF; border:1px solid var(--coral); color:var(--coral-deep);
+    border-radius:12px; padding:14px 16px; font-size:0.82rem; line-height:1.7;
+    max-width:640px; margin:0 auto 16px;
+  }
+  .config-warning code{background:#fff; padding:1px 5px; border-radius:4px;}
+
+  .modal-back{
+    display:none; position:fixed; inset:0; background:rgba(59,46,34,0.35);
+    align-items:center; justify-content:center; z-index:10; padding:20px;
+  }
+  .modal-back.show{display:flex;}
+  .modal{
+    background:var(--card); border-radius:16px; padding:20px; max-width:340px;
+    width:100%; text-align:center;
+  }
+  .modal p{font-size:0.9rem; line-height:1.6; margin:0 0 16px;}
+  .modal input[type="number"]{
+    width:100%; padding:12px; border-radius:10px; border:1px solid var(--line);
+    background:#fff; font-size:1.1rem; text-align:center; color:var(--ink);
+    margin-bottom:14px; font-family:'Noto Sans JP', sans-serif;
+  }
+  .modal .row{display:flex; gap:10px;}
+  .modal .row button{flex:1; padding:11px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-family:'Noto Sans JP', sans-serif;}
+  .modal .row .cancel{background:#EDE6D6; color:var(--ink);}
+  .modal .row .confirm{background:var(--coral); color:#fff;}
+
+  @media (max-width:380px){
+    .grid{grid-template-columns:1fr 1fr; gap:9px;}
+    .event-card{padding:11px;}
+    .name-row input[type="number"]{width:56px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">アトリエひなたぼっこ<small>チケット枚数管理</small></div>
+    <div class="sync" id="syncBadge"><span class="dot"></span><span id="syncText">読み込み中</span></div>
+  </header>
+
+  <div id="configWarning" class="config-warning" style="display:none;">
+    <strong>設定が必要です。</strong>このファイル内の <code>GAS_URL</code> に、Apps Scriptをデプロイして発行されたURLを貼り付けてから公開してください。
+  </div>
+
+  <div class="screen" id="loadingScreen">
+    <div class="loading">データを読み込んでいます…</div>
+  </div>
+
+  <!-- Setup screen -->
+  <div class="screen" id="setupScreen">
+    <div class="setup-card">
+      <h1 id="setupTitle">販売項目を設定</h1>
+      <p class="desc">項目名と上限枚数(こみこみ＋単品の合計がこの枚数で終了)を入力してください。使わない項目は空欄のままでかまいません(最大10項目)。ここで設定した内容は、このページを開いた全員と共有されます。</p>
+      <div id="nameInputs"></div>
+      <div class="field-error" id="setupError">項目名を入力した行には、上限枚数(1以上)も入力してください。</div>
+      <div class="field-error" id="setupErrorEmpty">項目を1つ以上入力してください。</div>
+      <button class="primary-btn" id="startBtn">この内容ではじめる</button>
+      <button class="ghost-btn" id="cancelEditBtn" style="margin-top:10px; display:none;">編集をやめて戻る</button>
+    </div>
+  </div>
+
+  <!-- Count screen -->
+  <div class="screen" id="countScreen">
+    <div class="totalbar">
+      <div class="box"><div class="lab">本日の合計</div><div class="val" id="totalCount">0</div></div>
+      <div class="box"><div class="lab">完売項目</div><div class="val" id="fullCount">0 / 0</div></div>
+    </div>
+
+    <button class="combo-btn" id="comboBtn">
+      <span>
+        <span class="t1">コミコミチケット</span>
+        <span class="t2" id="comboSub">全項目 +1</span>
+      </span>
+      <span class="arrow">＋</span>
+    </button>
+    <p class="combo-note" id="comboNote" style="display:none;">一部の項目が完売のため、コミコミチケットは販売できません</p>
+
+    <div class="grid" id="eventGrid"></div>
+
+    <div class="controls">
+      <button class="ghost-btn" id="undoBtn" disabled>元に戻す</button>
+      <button class="ghost-btn" id="editNamesBtn">項目を編集</button>
+      <button class="ghost-btn warn" id="resetBtn">本日リセット</button>
+    </div>
+    <div class="last-action" id="lastActionText"></div>
+  </div>
+
+</div>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <p id="modalText"></p>
+    <input type="number" id="modalInput" min="0" style="display:none;">
+    <div class="field-error" id="modalInputError">0以上、上限枚数以下の数値を入力してください。</div>
+    <div class="row">
+      <button class="cancel" id="modalCancel">キャンセル</button>
+      <button class="confirm" id="modalConfirm">実行する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ここに、Apps Scriptを「ウェブアプリ」としてデプロイしたときに
+   発行される .../exec で終わるURLを貼り付けてください。
+   ========================================================= */
+var GAS_URL = "https://script.google.com/macros/s/AKfycby_bC9gfvLf-Fjbe48rXzDvkNmzi75Orax4Q4IP1HnnKEv7VvGMhVt7nWJRIEi2162V/exec";
+
+(function(){
+  var MAX_SLOTS = 10;
+  var POLL_MS = 4000;
+
+  var DEFAULTS = [
+    { name: 'パン', cap: 49 },
+    { name: 'くじ', cap: 50 },
+    { name: 'かき氷', cap: 80 },
+    { name: 'きゅうり', cap: 80 },
+    { name: 'たこやき', cap: 60 },
+    { name: 'アメリカンドッグ', cap: 65 },
+    { name: 'おもしろ釣り', cap: 74 }
+  ];
+
+  var isConfigured = GAS_URL && GAS_URL.indexOf('YOUR_') !== 0;
+
+  var events = null;     // array of {name, cap}
+  var counts = null;     // array of numbers, same length/order as events
+  var lastAction = null; // {type:'combo'|'single', eventIndex}
+  var lastKnownUpdatedAt = 0;
+  var pollTimer = null;
+  var lastLocalWrite = 0;
+  var pendingConfirm = null;
+  var inFlight = false;
+
+  var el = {
+    loadingScreen: document.getElementById('loadingScreen'),
+    setupScreen: document.getElementById('setupScreen'),
+    countScreen: document.getElementById('countScreen'),
+    configWarning: document.getElementById('configWarning'),
+    nameInputs: document.getElementById('nameInputs'),
+    setupError: document.getElementById('setupError'),
+    setupErrorEmpty: document.getElementById('setupErrorEmpty'),
+    startBtn: document.getElementById('startBtn'),
+    cancelEditBtn: document.getElementById('cancelEditBtn'),
+    setupTitle: document.getElementById('setupTitle'),
+    totalCount: document.getElementById('totalCount'),
+    fullCount: document.getElementById('fullCount'),
+    comboBtn: document.getElementById('comboBtn'),
+    comboSub: document.getElementById('comboSub'),
+    comboNote: document.getElementById('comboNote'),
+    eventGrid: document.getElementById('eventGrid'),
+    undoBtn: document.getElementById('undoBtn'),
+    editNamesBtn: document.getElementById('editNamesBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    lastActionText: document.getElementById('lastActionText'),
+    syncBadge: document.getElementById('syncBadge'),
+    syncText: document.getElementById('syncText'),
+    modalBack: document.getElementById('modalBack'),
+    modalText: document.getElementById('modalText'),
+    modalInput: document.getElementById('modalInput'),
+    modalInputError: document.getElementById('modalInputError'),
+    modalCancel: document.getElementById('modalCancel'),
+    modalConfirm: document.getElementById('modalConfirm')
+  };
+
+  if(!isConfigured){
+    el.configWarning.style.display = 'block';
+    el.syncText.textContent = '未設定';
+    el.syncBadge.classList.add('offline');
+    return; // don't attempt to call a placeholder URL
+  }
+
+  function setSyncStatus(ok){
+    el.syncBadge.classList.toggle('offline', !ok);
+    var t = new Date();
+    var hh = String(t.getHours()).padStart(2,'0');
+    var mm = String(t.getMinutes()).padStart(2,'0');
+    el.syncText.textContent = ok ? ('共有中 ' + hh + ':' + mm) : '通信できません';
+  }
+
+  // GET: read-only fetch of current state
+  function fetchState(){
+    return fetch(GAS_URL + '?action=getState', { method:'GET' })
+      .then(function(r){ return r.json(); })
+      .then(function(json){ setSyncStatus(true); return json; })
+      .catch(function(){ setSyncStatus(false); return null; });
+  }
+
+  // POST: send a mutating action, spreadsheet applies it and returns the new state.
+  // text/plain avoids a CORS preflight, which Apps Script web apps don't handle.
+  function callAction(action, payload){
+    var body = Object.assign({ action: action }, payload || {});
+    lastLocalWrite = Date.now();
+    return fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(body)
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(json){ setSyncStatus(true); return json; })
+      .catch(function(){ setSyncStatus(false); return null; });
+  }
+
+  function applyStateToView(state){
+    if(!state || state.error) return;
+    events = state.events || null;
+    counts = state.counts || null;
+    lastAction = state.lastAction || null;
+    lastKnownUpdatedAt = state.updatedAt || 0;
+    if(events){ renderCount(); } else { renderSetup(false); }
+  }
+
+  function showScreen(name){
+    ['loadingScreen','setupScreen','countScreen'].forEach(function(id){
+      document.getElementById(id).classList.toggle('active', id === name);
+    });
+  }
+
+  function buildNameInputs(existingEvents){
+    el.nameInputs.innerHTML = '';
+    var seed = existingEvents;
+    if(!seed){
+      seed = [];
+      for(var d=0; d<MAX_SLOTS; d++){
+        seed.push(d < DEFAULTS.length ? DEFAULTS[d] : { name:'', cap:'' });
+      }
+    }
+    for(var i=0;i<MAX_SLOTS;i++){
+      var item = seed[i] || { name:'', cap:'' };
+      var row = document.createElement('div');
+      row.className = 'name-row';
+
+      var num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = i+1;
+      row.appendChild(num);
+
+      var nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.maxLength = 14;
+      nameInput.placeholder = '項目名（空欄で未使用）';
+      nameInput.value = item.name || '';
+      nameInput.id = 'nameInput' + i;
+      row.appendChild(nameInput);
+
+      var capWrap = document.createElement('div');
+      capWrap.className = 'cap-wrap';
+      var capInput = document.createElement('input');
+      capInput.type = 'number';
+      capInput.min = '1';
+      capInput.placeholder = '上限';
+      capInput.value = (item.cap || item.cap === 0) ? item.cap : '';
+      capInput.id = 'capInput' + i;
+      var unit = document.createElement('span');
+      unit.className = 'cap-unit';
+      unit.textContent = '枚';
+      capWrap.appendChild(capInput);
+      capWrap.appendChild(unit);
+      row.appendChild(capWrap);
+
+      el.nameInputs.appendChild(row);
+    }
+  }
+
+  function renderSetup(isEdit){
+    el.setupTitle.textContent = isEdit ? '販売項目を編集' : '販売項目を設定';
+    el.startBtn.textContent = isEdit ? 'この内容で保存する' : 'この内容ではじめる';
+    el.cancelEditBtn.style.display = isEdit ? 'block' : 'none';
+    buildNameInputs(events);
+    el.setupError.classList.remove('show');
+    el.setupErrorEmpty.classList.remove('show');
+    showScreen('setupScreen');
+  }
+
+  function renderCount(){
+    var n = events.length;
+    var total = counts.reduce(function(a,b){return a+b;}, 0);
+    var fullList = counts.map(function(c,i){ return c >= events[i].cap; });
+    var fullN = fullList.filter(Boolean).length;
+    var anyFull = fullN > 0;
+
+    el.totalCount.textContent = total;
+    el.fullCount.textContent = fullN + ' / ' + n;
+    el.comboSub.textContent = '全' + n + '項目 +1';
+
+    el.comboBtn.disabled = anyFull;
+    el.comboNote.style.display = anyFull ? 'block' : 'none';
+
+    el.eventGrid.innerHTML = '';
+    for(var i=0;i<n;i++){
+      var full = fullList[i];
+      var cap = events[i].cap;
+      var card = document.createElement('div');
+      card.className = 'event-card' + (full ? ' full' : '');
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'event-name';
+      nameEl.textContent = events[i].name;
+      card.appendChild(nameEl);
+
+      if(full){
+        var badge = document.createElement('div');
+        badge.className = 'done-badge';
+        badge.textContent = '本日終了';
+        card.appendChild(badge);
+      }
+
+      var countEl = document.createElement('div');
+      countEl.className = 'event-count';
+      countEl.innerHTML = counts[i] + ' <small>/ ' + cap + '</small>';
+      card.appendChild(countEl);
+
+      var remainEl = document.createElement('div');
+      remainEl.className = 'event-remain';
+      remainEl.textContent = full ? '完売しました' : ('残り ' + (cap - counts[i]) + ' 枚');
+      card.appendChild(remainEl);
+
+      var editBtn = document.createElement('button');
+      editBtn.className = 'edit-count-btn';
+      editBtn.textContent = '数値を編集';
+      editBtn.addEventListener('click', function(idx){
+        return function(){ openCountEditModal(idx); };
+      }(i));
+      card.appendChild(editBtn);
+
+      var btn = document.createElement('button');
+      btn.className = 'single-btn';
+      btn.textContent = '+1 販売';
+      btn.disabled = full;
+      btn.addEventListener('click', function(idx){
+        return function(){ handleSingle(idx); };
+      }(i));
+      card.appendChild(btn);
+
+      el.eventGrid.appendChild(card);
+    }
+
+    el.undoBtn.disabled = !lastAction;
+    if(lastAction){
+      var label = lastAction.type === 'combo' ? 'コミコミチケット' : (events[lastAction.eventIndex] ? events[lastAction.eventIndex].name : '');
+      el.lastActionText.textContent = '直前の操作: ' + label;
+    } else {
+      el.lastActionText.textContent = '';
+    }
+
+    showScreen('countScreen');
+  }
+
+  async function handleSingle(index){
+    if(!events || !counts || inFlight) return;
+    inFlight = true;
+    var result = await callAction('single', { index: index });
+    inFlight = false;
+    applyStateToView(result);
+  }
+
+  async function handleCombo(){
+    if(!events || !counts || inFlight) return;
+    var anyFull = counts.some(function(c,i){ return c >= events[i].cap; });
+    if(anyFull) return;
+    inFlight = true;
+    var result = await callAction('combo');
+    inFlight = false;
+    applyStateToView(result);
+  }
+
+  async function handleUndo(){
+    if(!lastAction || inFlight) return;
+    inFlight = true;
+    var result = await callAction('undo');
+    inFlight = false;
+    applyStateToView(result);
+  }
+
+  function openModal(text, onConfirm){
+    el.modalText.textContent = text;
+    el.modalInput.style.display = 'none';
+    el.modalInputError.classList.remove('show');
+    pendingConfirm = onConfirm;
+    el.modalBack.classList.add('show');
+  }
+  function closeModal(){
+    el.modalBack.classList.remove('show');
+    el.modalInput.style.display = 'none';
+    el.modalInputError.classList.remove('show');
+    pendingConfirm = null;
+  }
+  el.modalCancel.addEventListener('click', function(){ closeModal(); });
+  el.modalConfirm.addEventListener('click', function(){
+    var fn = pendingConfirm;
+    if(fn) fn();
+  });
+
+  function openCountEditModal(eventIndex){
+    var ev = events[eventIndex];
+    el.modalText.textContent = '「' + ev.name + '」の現在の枚数を入力してください（上限 ' + ev.cap + ' 枚）。';
+    el.modalInput.style.display = 'block';
+    el.modalInput.min = '0';
+    el.modalInput.max = String(ev.cap);
+    el.modalInput.value = counts[eventIndex];
+    el.modalInputError.classList.remove('show');
+    pendingConfirm = async function(){
+      var raw = el.modalInput.value.trim();
+      var num = parseInt(raw, 10);
+      if(raw === '' || isNaN(num) || num < 0 || num > ev.cap){
+        el.modalInputError.classList.add('show');
+        return;
+      }
+      closeModal();
+      var result = await callAction('setCount', { index: eventIndex, value: num });
+      applyStateToView(result);
+    };
+    el.modalBack.classList.add('show');
+  }
+
+  el.startBtn.addEventListener('click', async function(){
+    var newEvents = [];
+    var hasNamedWithoutCap = false;
+
+    for(var i=0;i<MAX_SLOTS;i++){
+      var nameVal = document.getElementById('nameInput'+i).value.trim();
+      var capRaw = document.getElementById('capInput'+i).value.trim();
+      if(!nameVal) continue;
+      var capNum = parseInt(capRaw, 10);
+      if(!capRaw || isNaN(capNum) || capNum <= 0){
+        hasNamedWithoutCap = true;
+        continue;
+      }
+      newEvents.push({ name: nameVal, cap: capNum });
+    }
+
+    if(hasNamedWithoutCap){
+      el.setupError.classList.add('show');
+      el.setupErrorEmpty.classList.remove('show');
+      return;
+    }
+    if(newEvents.length === 0){
+      el.setupErrorEmpty.classList.add('show');
+      el.setupError.classList.remove('show');
+      return;
+    }
+    el.setupError.classList.remove('show');
+    el.setupErrorEmpty.classList.remove('show');
+
+    var result = await callAction('setConfig', { events: newEvents });
+    applyStateToView(result);
+  });
+
+  el.cancelEditBtn.addEventListener('click', function(){
+    if(events){ renderCount(); }
+  });
+
+  el.editNamesBtn.addEventListener('click', function(){
+    renderSetup(true);
+  });
+
+  el.undoBtn.addEventListener('click', handleUndo);
+  el.comboBtn.addEventListener('click', handleCombo);
+
+  el.resetBtn.addEventListener('click', function(){
+    openModal('本日の販売数をすべて0にリセットします。この操作は取り消せません。よろしいですか?', async function(){
+      closeModal();
+      var result = await callAction('reset');
+      applyStateToView(result);
+    });
+  });
+
+  function startPolling(){
+    if(pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(async function(){
+      if(inFlight) return;
+      if(Date.now() - lastLocalWrite < 1500) return;
+      var state = await fetchState();
+      if(state && !state.error && state.updatedAt !== lastKnownUpdatedAt){
+        applyStateToView(state);
+      }
+    }, POLL_MS);
+  }
+
+  async function init(){
+    showScreen('loadingScreen');
+    var state = await fetchState();
+    if(state){
+      applyStateToView(state);
+    } else {
+      renderSetup(false);
+    }
+    startPolling();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
