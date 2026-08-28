@@ -85,6 +85,8 @@
     text-decoration:none;
   }
   .brand .mark{width:30px; height:30px; flex-shrink:0;}
+  .brand-break{display:none;}
+  .brand-text{line-height:1.25;}
   .nav-links{display:flex; align-items:center; gap:22px; font-size:0.92rem; font-weight:700;}
   .nav-links a{text-decoration:none; padding:6px 2px; border-bottom:2px solid transparent;}
   .nav-links a:hover, .nav-links a:focus-visible{border-bottom-color:var(--coral-deep);}
@@ -416,6 +418,8 @@
     .bubbles{grid-template-columns:1fr;}
     .nav-links{gap:14px;}
     .nav-links span.txt{display:none;}
+    .brand-break{display:block;}
+    .brand{font-size:0.98rem;}
   }
   @media (max-width: 560px){
     section{padding:44px 0;}
@@ -441,7 +445,7 @@
           <line x1="11.5" y1="28.5" x2="7" y2="33"/>
         </g>
       </svg>
-      アトリエひなたぼっこ
+      <span class="brand-text">アトリエ<br class="brand-break">ひなたぼっこ</span>
     </a>
     <div class="nav-links">
       <a href="#activities"><span class="txt">できること</span></a>
