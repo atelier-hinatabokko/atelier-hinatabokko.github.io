@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>過去のお知らせ | アトリエひなたぼっこ</title>
+<meta name="description" content="群馬県藤岡市の小さなアトリエ「ひなたぼっこ」のお知らせ一覧です。ワークショップやイベントなど、これまでのお知らせをまとめています。">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+    --cream:#fbf3df;
+    --cream-deep:#f5e9c9;
+    --ink:#3a2e27;
+    --indigo:#2b3a55;
+    --coral:#e8998d;
+    --coral-deep:#d97b8c;
+    --sun:#e8a33d;
+    --mint:#bfe3d4;
+    --lilac:#e3d4ef;
+    --line:#c9b98a;
+    --white:#fffdf7;
+    --radius:18px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Zen Maru Gothic', sans-serif;
+    line-height:1.85;
+    font-weight:500;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-weight:700;
+    margin:0;
+    color:var(--indigo);
+  }
+
+  a{color:inherit;}
+  img,svg{display:block; max-width:100%;}
+
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  .stitch{
+    height:0;
+    border-top:3px dashed var(--indigo);
+    opacity:0.35;
+    margin:0;
+  }
+  .stitch.thick{border-top-width:4px; opacity:0.5;}
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(251,243,223,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:2px dashed var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:16px; padding-bottom:16px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:1.15rem;
+    font-weight:700;
+    color:var(--indigo);
+    text-decoration:none;
+  }
+  .brand .mark{width:30px; height:30px; flex-shrink:0;}
+  .brand-break{display:none;}
+  .brand-text{line-height:1.25;}
+  .nav-links{display:flex; align-items:center; gap:22px; font-size:0.92rem; font-weight:700;}
+  .nav-links a{text-decoration:none; padding:6px 2px; border-bottom:2px solid transparent;}
+  .nav-links a:hover, .nav-links a:focus-visible{border-bottom-color:var(--coral-deep);}
+  .nav-links .ig-link{
+    display:flex; align-items:center; gap:6px;
+    background:var(--coral-deep); color:var(--white);
+    padding:8px 16px; border-radius:999px;
+    border-bottom:none !important;
+  }
+  .nav-links .ig-link:hover{background:var(--indigo); color:var(--white);}
+
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--sun);
+    outline-offset:3px;
+  }
+
+    .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.82rem; font-weight:700; letter-spacing:0.05em;
+    color:var(--coral-deep);
+    margin-bottom:14px;
+  }
+  .eyebrow::before{content:""; width:22px; height:2px; background:var(--coral-deep);}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 26px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.95rem;
+    text-decoration:none;
+    border:2px solid var(--indigo);
+    transition:transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .btn.solid{background:var(--indigo); color:var(--white);}
+  .btn.solid:hover{background:var(--coral-deep); border-color:var(--coral-deep); color:var(--white); transform:translateY(-2px);}
+  .btn.ghost{background:transparent; color:var(--indigo);}
+  .btn.ghost:hover{background:var(--indigo); color:var(--white); transform:translateY(-2px);}
+
+  /* ---------- section shell ---------- */
+  section{padding:60px 0;}
+  .section-head{max-width:56ch; margin-bottom:36px;}
+  .section-head .eyebrow{margin-bottom:12px;}
+  .section-head h2{font-size:clamp(1.4rem, 2.8vw, 1.9rem);}
+  .section-head p{color:#584a3d; margin-top:14px;}
+
+  .section-head h1.section-title{font-size:clamp(1.4rem, 2.8vw, 1.9rem);}
+
+  /* ---------- activity cards ---------- */
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:20px;
+  }
+  .tag-card{
+    position:relative;
+    background:var(--white);
+    border:2px dashed var(--indigo);
+    border-radius:var(--radius);
+    padding:28px 24px 24px;
+  }
+  .tag-card::before{
+    content:"";
+    position:absolute;
+    top:-11px; left:24px;
+    width:20px; height:20px;
+    background:var(--sun);
+    border:2px dashed var(--indigo);
+    border-radius:50%;
+  }
+  .tag-card .num{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:0.85rem;
+    color:var(--coral-deep);
+    font-weight:700;
+    letter-spacing:0.05em;
+  }
+  .tag-card h3{
+    font-size:1.15rem;
+    margin:10px 0 10px;
+  }
+  .tag-card p{margin:0; color:#584a3d; font-size:0.92rem;}
+  .tag-card .badge{
+    display:inline-block;
+    margin-top:14px;
+    font-size:0.76rem;
+    font-weight:700;
+    color:var(--indigo);
+    background:var(--cream-deep);
+    padding:4px 12px;
+    border-radius:999px;
+  }
+
+  /* ---------- prelaunch banner ---------- */
+  .prelaunch{
+    background:var(--sun);
+    border-radius:var(--radius);
+    padding:24px 26px 26px;
+  }
+  .prelaunch .tag{
+    background:var(--ink);
+    color:var(--sun);
+    font-size:0.78rem;
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:999px;
+    flex-shrink:0;
+  }
+  .prelaunch p{margin:0; font-weight:700; color:var(--ink); font-size:0.95rem;}
+  .prelaunch .tag{display:inline-block;}
+  .notice-title{
+    font-family:'Zen Maru Gothic', sans-serif;
+    margin:14px 0 4px;
+    font-size:1.3rem;
+    font-weight:900;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .prelaunch .notice-lead{margin:0 0 16px;}
+  .notice-details{
+    background:var(--white);
+    border-radius:12px;
+    padding:14px 18px;
+    margin:0;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:10px 16px;
+    font-size:0.92rem;
+    color:var(--ink);
+  }
+  .notice-details dt{
+    font-weight:700;
+    color:var(--coral-deep);
+    white-space:nowrap;
+  }
+  .notice-details dd{margin:0; line-height:1.6;}
+  .notice-details small{font-size:0.82rem; color:#584a3d;}
+
+  /* ---------- news list (news.html) ---------- */
+  .news-page{padding-top:48px;}
+  .news-year{
+    font-size:1.1rem;
+    margin:0 0 18px;
+    padding-bottom:8px;
+    border-bottom:2px dashed var(--line);
+  }
+  .news-list{
+    list-style:none; padding:0; margin:0 0 44px;
+    display:grid; gap:26px;
+    max-width:760px;
+  }
+  .news-item{scroll-margin-top:96px;}
+  .news-item .num{margin:0;}
+  .news-item h3{font-size:1.15rem; margin:6px 0 10px;}
+  .news-item .notice-details{background:var(--cream); margin-top:14px;}
+  .news-back{margin-top:8px;}
+
+  /* ---------- connect ---------- */
+  .connect{
+    background:var(--indigo);
+    color:var(--cream);
+    text-align:center;
+  }
+  .connect h2{color:var(--white);}
+  .connect .section-head{margin:0 auto 34px; text-align:center;}
+  .connect .section-head p{color:#d9dced;}
+  .connect .eyebrow{color:var(--sun);}
+  .connect .eyebrow::before{background:var(--sun);}
+  .ig-cta{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--sun); color:var(--ink);
+    padding:16px 34px;
+    border-radius:999px;
+    font-weight:700; font-size:1.05rem;
+    text-decoration:none;
+    border:2px solid var(--sun);
+    transition:transform 0.15s ease, background 0.15s ease;
+  }
+  .ig-cta:hover{background:var(--coral); border-color:var(--coral); transform:translateY(-2px);}
+
+  footer{
+    padding:34px 0;
+    text-align:center;
+    font-size:0.82rem;
+    color:#8a7c68;
+  }
+
+  @media (max-width: 880px){
+    .card-grid{grid-template-columns:1fr;}
+    .nav-links{gap:14px;}
+    .nav-links span.txt{display:none;}
+    .brand-break{display:block;}
+    .brand{font-size:0.98rem;}
+  }
+  @media (max-width: 560px){
+    section{padding:44px 0;}
+    .news-page{padding-top:36px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a class="brand" href="index.html">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="12" fill="#e8a33d"/>
+        <g stroke="#2b3a55" stroke-width="2" stroke-dasharray="1 5" stroke-linecap="round">
+          <line x1="20" y1="2" x2="20" y2="8"/>
+          <line x1="20" y1="32" x2="20" y2="38"/>
+          <line x1="2" y1="20" x2="8" y2="20"/>
+          <line x1="32" y1="20" x2="38" y2="20"/>
+          <line x1="7" y1="7" x2="11.5" y2="11.5"/>
+          <line x1="28.5" y1="28.5" x2="33" y2="33"/>
+          <line x1="33" y1="7" x2="28.5" y2="11.5"/>
+          <line x1="11.5" y1="28.5" x2="7" y2="33"/>
+        </g>
+      </svg>
+      <span class="brand-text">アトリエ<br class="brand-break">ひなたぼっこ</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#activities"><span class="txt">できること</span></a>
+      <a href="index.html#info"><span class="txt">料金・時間</span></a>
+      <a href="index.html#access"><span class="txt">アクセス</span></a>
+      <a href="news.html" aria-current="page"><span class="txt">お知らせ</span></a>
+      <a class="ig-link" href="https://www.instagram.com/atelier.hinatabokko/" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="news-page">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">お知らせ</p>
+        <h1 class="section-title">過去のお知らせ</h1>
+        <p>ワークショップやイベントなど、これまでのお知らせです。最新情報はInstagramでお知らせしています。</p>
+      </div>
+
+      <!-- ===== 2026年 =====
+           新しいお知らせは、この下の <ul> の一番上に <li class="tag-card news-item"> を追加してください。
+           id は「news-年月日」(例:news-20261021)の形にそろえます。同じ日に2件ある場合は末尾に短い英語を付けます(例:news-20260829-ennichi)。 -->
+      <h2 class="news-year">2026年</h2>
+      <ul class="news-list">
+
+        <li class="tag-card news-item" id="news-20261021">
+          <p class="num"><time datetime="2026-10-21">2026.10.21</time></p>
+          <h3>11/14(土) あそびばワークショップ</h3>
+          <p>モールでキャラクターのキーホルダーを作ります！</p>
+          <dl class="notice-details">
+            <dt>日時</dt><dd>11月14日(土) 10時〜12時</dd>
+            <dt>場所</dt><dd>アトリエのあそびば</dd>
+            <dt>参加費</dt><dd>1キャラクターにつき300円</dd>
+            <dt>定員</dt><dd>先着6名<br><small>小学3年生以上は子どもだけでも参加OK</small></dd>
+            <dt>申込</dt><dd>スタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)で受け付けています。</dd>
+          </dl>
+        </li>
+
+        <li class="tag-card news-item" id="news-20261003">
+          <p class="num"><time datetime="2026-10-03">2026.10.3</time></p>
+          <h3>10/3(土) Handmadeワークショップ シュシュづくり</h3>
+          <p>自分の好きな布で、シュシュを作ってみませんか？</p>
+          <dl class="notice-details">
+            <dt>日時</dt><dd>10月3日(土) 9:00〜<br><small>①9:00〜10:30 ②9:30〜11:00 ③10:00〜11:30(各枠2名)</small></dd>
+            <dt>定員</dt><dd>先着6名</dd>
+            <dt>制作費</dt><dd>1,000円<br><small>制作時間はおよそ1時間30分</small></dd>
+            <dt>布</dt><dd>持ち込みの場合は12cm×70cmを2枚<br><small>アトリエの布から選ぶこともできます。糸とミシンはアトリエのものを使います。</small></dd>
+            <dt>申込</dt><dd>ご希望の時間枠を、スタッフに直接またはInstagramのDMでお知らせください。</dd>
+          </dl>
+        </li>
+
+        <li class="tag-card news-item" id="news-20260901">
+          <p class="num"><time datetime="2026-09-01">2026.9.1</time></p>
+          <h3>キッズスペース「あそびば」オープン</h3>
+          <p>9月1日(火)15時に、子どもたちの放課後の居場所「あそびば」がオープンしました。おしゃべりしたり、本を読んだり、おもちゃで遊んだり。宿題も一緒にやってみよう。</p>
+          <dl class="notice-details">
+            <dt>時間</dt><dd>学校のある日の平日 15:00〜17:00<br><small>一度家に帰ってから来てね</small></dd>
+            <dt>入場料</dt><dd>無料</dd>
+            <dt>申込</dt><dd>ご利用の際は、連絡カードに必要事項を書いて事前にお申し込みください。<br><small>カードは平日午後にあそびばで配付しています。</small></dd>
+          </dl>
+        </li>
+
+        <li class="tag-card news-item" id="news-20260829-ennichi">
+          <p class="num"><time datetime="2026-08-29">2026.8.29</time></p>
+          <h3>8/29(土) オープニングイベント「あそびば縁日」</h3>
+          <p>お友だちを誘って、ちょっぴりお小遣いを持って、遊びに来てください。</p>
+          <dl class="notice-details">
+            <dt>日時</dt><dd>8月29日(土) 10:00〜12:00</dd>
+            <dt>場所</dt><dd>アトリエひなたぼっこ</dd>
+            <dt>内容</dt><dd>ひもくじ、何が釣れるかな？釣り、かき氷など<br><small>数に限りがあるため、完売次第終了です。</small></dd>
+          </dl>
+        </li>
+
+        <li class="tag-card news-item" id="news-20260829">
+          <p class="num"><time datetime="2026-08-29">2026.8.29</time></p>
+          <h3>プレオープンのお知らせ</h3>
+          <p>8月中はプレオープン期間。9月から本格オープンの予定です。お茶のサービスもありますので、気軽にのぞきに来てください。</p>
+        </li>
+
+      </ul>
+
+      <div class="news-back">
+        <a class="btn ghost" href="index.html">トップページへ戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="connect">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">つながる</p>
+        <h2>最新情報はInstagramで</h2>
+        <p>ワークショップやおやつの会の日程、アトリエの様子はInstagramで発信しています。</p>
+      </div>
+      <a class="ig-cta" href="https://www.instagram.com/atelier.hinatabokko/" target="_blank" rel="noopener">
+        Instagramをフォローする
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    &copy; アトリエひなたぼっこ
+  </div>
+</footer>
+
+</body>
+</html>
