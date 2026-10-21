@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>アトリエひなたぼっこ | 藤岡市の小さな縫い場・あそびば</title>
-<meta name="description" content="群馬県藤岡市にある小さなアトリエ「ひなたぼっこ」。ミシンのオーダーメイド・製作品の販売・ワークショップ、フリースペース、放課後のあそびば、手作りおやつの会。">
+<meta name="description" content="群馬県藤岡市にある小さなアトリエ「ひなたぼっこ」。布小物や洋服のオーダーメイド・製作品の販売・ワークショップ、フリースペース、放課後のあそびば、手作りおやつの会。">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -309,11 +311,7 @@
   .prelaunch{
     background:var(--sun);
     border-radius:var(--radius);
-    padding:26px 30px;
-    display:flex;
-    align-items:center;
-    gap:20px;
-    flex-wrap:wrap;
+    padding:24px 26px 26px;
   }
   .prelaunch .tag{
     background:var(--ink);
@@ -325,6 +323,34 @@
     flex-shrink:0;
   }
   .prelaunch p{margin:0; font-weight:700; color:var(--ink); font-size:0.95rem;}
+  .prelaunch .tag{display:inline-block;}
+  .notice-title{
+    font-family:'Zen Maru Gothic', sans-serif;
+    margin:14px 0 4px;
+    font-size:1.3rem;
+    font-weight:900;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .prelaunch .notice-lead{margin:0 0 16px;}
+  .notice-details{
+    background:var(--white);
+    border-radius:12px;
+    padding:14px 18px;
+    margin:0;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:10px 16px;
+    font-size:0.92rem;
+    color:var(--ink);
+  }
+  .notice-details dt{
+    font-weight:700;
+    color:var(--coral-deep);
+    white-space:nowrap;
+  }
+  .notice-details dd{margin:0; line-height:1.6;}
+  .notice-details small{font-size:0.82rem; color:#584a3d;}
 
   /* ---------- access ---------- */
   .access .wrap{
@@ -472,7 +498,6 @@
     <div class="wrap">
       <div>
         <p class="eyebrow">群馬県藤岡市 · 小さなアトリエ</p>
-        <span class="status-badge">只今プレオープン期間中</span>
         <h1>ミシンと布で作った小物たちが<br>「<span class="highlight">アトリエひなたぼっこ</span>」<br>でお待ちしています！</h1>
         <p class="sub">ホッと一息、おしゃべりしながら、ほっこり時間を過ごしませんか？</p>
         <p class="lead">
@@ -625,7 +650,15 @@
         </ul>
         <div class="prelaunch">
           <span class="tag">お知らせ</span>
-          <p>8月中はプレオープン期間。9月から本格オープンの予定です。お茶のサービスもありますので、気軽にのぞきに来てください。</p>
+          <h3 class="notice-title">あそびばワークショップ</h3>
+          <p class="notice-lead">モールでキャラクターのキーホルダーを作ります！</p>
+          <dl class="notice-details">
+            <dt>日時</dt><dd>11月14日(土) 10時〜12時</dd>
+            <dt>場所</dt><dd>アトリエのあそびば</dd>
+            <dt>参加費</dt><dd>1キャラクターにつき300円</dd>
+            <dt>定員</dt><dd>先着6名<br><small>小学3年生以上は子どもだけでも参加OK</small></dd>
+            <dt>申込</dt><dd>スタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)で受け付けています。</dd>
+          </dl>
         </div>
       </div>
       <div>
