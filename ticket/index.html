@@ -2,697 +2,774 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>アトリエひなたぼっこ | チケット枚数管理</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アトリエひなたぼっこ | 藤岡市の小さな縫い場・あそびば</title>
+<meta name="description" content="群馬県藤岡市にある小さなアトリエ「ひなたぼっこ」。布小物や洋服のオーダーメイド・製作品の販売・ワークショップ、フリースペース、放課後のあそびば、手作りおやつの会。">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<!-- このバージョンはGoogleスプレッドシート(Apps Script経由)を使うため、外部SDKの読み込みは不要です -->
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #FFF7E6;
-    --bg-2: #FFEFCF;
-    --card: #FFFDF7;
-    --ink: #3B2E22;
-    --ink-soft: #7A6A56;
-    --sun: #F2A93B;
-    --sun-deep: #C7841F;
-    --leaf: #5B8C74;
-    --leaf-deep: #3E6752;
-    --coral: #E2694F;
-    --coral-deep: #A8422F;
-    --line: #EAD9B4;
-    --shadow: 0 2px 0 rgba(59,46,34,0.08);
+    --cream:#fbf3df;
+    --cream-deep:#f5e9c9;
+    --ink:#3a2e27;
+    --indigo:#2b3a55;
+    --coral:#e8998d;
+    --coral-deep:#d97b8c;
+    --sun:#e8a33d;
+    --mint:#bfe3d4;
+    --lilac:#e3d4ef;
+    --line:#c9b98a;
+    --white:#fffdf7;
+    --radius:18px;
   }
+
   *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
   body{
     margin:0;
-    min-height:100vh;
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
-    font-family:'Noto Sans JP', sans-serif;
+    background:var(--cream);
     color:var(--ink);
-    padding: 20px 14px 60px;
+    font-family:'Zen Maru Gothic', sans-serif;
+    line-height:1.85;
+    font-weight:500;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:640px; margin:0 auto;}
 
-  header{
-    display:flex; align-items:flex-end; justify-content:space-between;
-    gap:10px; margin-bottom:18px;
-  }
-  .brand{
+  h1,h2,h3{
     font-family:'Zen Maru Gothic', sans-serif;
     font-weight:700;
+    margin:0;
+    color:var(--indigo);
+  }
+
+  a{color:inherit;}
+  img,svg{display:block; max-width:100%;}
+
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  .stitch{
+    height:0;
+    border-top:3px dashed var(--indigo);
+    opacity:0.35;
+    margin:0;
+  }
+  .stitch.thick{border-top-width:4px; opacity:0.5;}
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(251,243,223,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:2px dashed var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:16px; padding-bottom:16px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Zen Maru Gothic', sans-serif;
     font-size:1.15rem;
-    line-height:1.3;
-    color:var(--sun-deep);
+    font-weight:700;
+    color:var(--indigo);
+    text-decoration:none;
   }
-  .brand small{
-    display:block;
-    font-family:'Noto Sans JP', sans-serif;
-    font-weight:500;
-    font-size:0.72rem;
-    color:var(--ink-soft);
-    letter-spacing:.02em;
-    margin-top:2px;
-  }
-  .sync{
+  .brand .mark{width:30px; height:30px; flex-shrink:0;}
+  .brand-break{display:none;}
+  .brand-text{line-height:1.25;}
+  .nav-links{display:flex; align-items:center; gap:22px; font-size:0.92rem; font-weight:700;}
+  .nav-links a{text-decoration:none; padding:6px 2px; border-bottom:2px solid transparent;}
+  .nav-links a:hover, .nav-links a:focus-visible{border-bottom-color:var(--coral-deep);}
+  .nav-links .ig-link{
     display:flex; align-items:center; gap:6px;
-    font-size:0.72rem; color:var(--ink-soft);
-    background:var(--card); border:1px solid var(--line);
-    border-radius:999px; padding:6px 10px;
+    background:var(--coral-deep); color:var(--white);
+    padding:8px 16px; border-radius:999px;
+    border-bottom:none !important;
+  }
+  .nav-links .ig-link:hover{background:var(--indigo); color:var(--white);}
+
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--sun);
+    outline-offset:3px;
+  }
+
+  /* ---------- pain point bubbles ---------- */
+  .bubbles-section{padding:44px 0 10px;}
+  .bubbles{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+  }
+  .blob{
+    padding:26px 22px;
+    text-align:center;
+    font-size:0.92rem;
+    font-weight:700;
+    color:var(--ink);
+    border-radius:44% 56% 58% 42% / 52% 44% 56% 48%;
+  }
+  .blob:nth-child(1){background:var(--mint);}
+  .blob:nth-child(2){background:var(--coral); color:var(--white);}
+  .blob:nth-child(3){background:var(--lilac);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:48px 0 56px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .wrap{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:48px;
+    align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.82rem; font-weight:700; letter-spacing:0.05em;
+    color:var(--coral-deep);
+    margin-bottom:14px;
+  }
+  .eyebrow::before{content:""; width:22px; height:2px; background:var(--coral-deep);}
+  .status-badge{
+    display:inline-block;
+    background:var(--sun);
+    color:var(--ink);
+    font-size:0.76rem;
+    font-weight:700;
+    padding:5px 14px;
+    border-radius:999px;
+    margin-bottom:16px;
+  }
+  .hero h1{
+    font-size:clamp(18px, 5.4vw, 34px);
+    line-height:1.5;
+    margin-bottom:8px;
+  }
+  .hero h1 .highlight{
+    color:var(--coral-deep);
+    box-shadow:inset 0 -0.4em 0 var(--cream-deep);
+  }
+  .hero p.sub{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:1.1rem;
+    color:var(--indigo);
+    margin:14px 0 24px;
+  }
+  .hero p.lead{
+    font-size:1rem;
+    max-width:46ch;
+    margin-bottom:28px;
+    color:#584a3d;
+  }
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 26px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.95rem;
+    text-decoration:none;
+    border:2px solid var(--indigo);
+    transition:transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .btn.solid{background:var(--indigo); color:var(--white);}
+  .btn.solid:hover{background:var(--coral-deep); border-color:var(--coral-deep); color:var(--white); transform:translateY(-2px);}
+  .btn.ghost{background:transparent; color:var(--indigo);}
+  .btn.ghost:hover{background:var(--indigo); color:var(--white); transform:translateY(-2px);}
+
+  .sun-illust{
+    width:100%; aspect-ratio:1/1; max-width:320px; margin:0 auto;
+  }
+
+  /* ---------- section shell ---------- */
+  section{padding:60px 0;}
+  .section-head{max-width:56ch; margin-bottom:36px;}
+  .section-head .eyebrow{margin-bottom:12px;}
+  .section-head h2{font-size:clamp(1.4rem, 2.8vw, 1.9rem);}
+  .section-head p{color:#584a3d; margin-top:14px;}
+
+  /* ---------- activity cards ---------- */
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:20px;
+  }
+  .tag-card{
+    position:relative;
+    background:var(--white);
+    border:2px dashed var(--indigo);
+    border-radius:var(--radius);
+    padding:28px 24px 24px;
+  }
+  .tag-card::before{
+    content:"";
+    position:absolute;
+    top:-11px; left:24px;
+    width:20px; height:20px;
+    background:var(--sun);
+    border:2px dashed var(--indigo);
+    border-radius:50%;
+  }
+  .tag-card .num{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:0.85rem;
+    color:var(--coral-deep);
+    font-weight:700;
+    letter-spacing:0.05em;
+  }
+  .tag-card h3{
+    font-size:1.15rem;
+    margin:10px 0 10px;
+  }
+  .tag-card p{margin:0; color:#584a3d; font-size:0.92rem;}
+  .tag-card .badge{
+    display:inline-block;
+    margin-top:14px;
+    font-size:0.76rem;
+    font-weight:700;
+    color:var(--indigo);
+    background:var(--cream-deep);
+    padding:4px 12px;
+    border-radius:999px;
+  }
+
+  /* ---------- about ---------- */
+  .about{background:var(--white); border-top:2px dashed var(--line); border-bottom:2px dashed var(--line);}
+  .about .wrap{
+    display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:center;
+  }
+  .about-quote{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:clamp(1.25rem, 2.4vw, 1.6rem);
+    color:var(--indigo);
+    line-height:1.9;
+    border-left:4px dashed var(--coral-deep);
+    padding-left:24px;
+  }
+  .about-body p{color:#584a3d; margin-bottom:16px;}
+
+  /* ---------- info strip (price / hours / contact) ---------- */
+  .info-strip{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+  }
+  .info-card{
+    background:var(--white);
+    border:2px solid var(--indigo);
+    border-radius:var(--radius);
+    padding:26px 24px;
+  }
+  .info-card .icon{
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--cream-deep);
+    border-radius:50%;
+    margin-bottom:14px;
+    font-size:1.2rem;
+  }
+  .info-card h3{font-size:1.05rem; margin-bottom:12px;}
+  .info-card dl{margin:0;}
+  .info-card dl div{
+    display:flex; justify-content:space-between; gap:12px;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:0.9rem;
+  }
+  .info-card dl div:last-of-type{border-bottom:none;}
+  .info-card dt{color:#7a6c58; flex-shrink:0;}
+  .info-card dd{margin:0; font-weight:700; color:var(--indigo); text-align:right;}
+  .info-card .note{
+    margin-top:12px;
+    font-size:0.78rem;
+    color:#8a7c68;
+  }
+  .info-card .tel-link{
+    display:block;
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--indigo);
+    text-decoration:none;
+    margin:6px 0 4px;
+  }
+  .info-card .tel-link:hover{color:var(--coral-deep);}
+
+  /* ---------- prelaunch banner ---------- */
+  .prelaunch{
+    background:var(--sun);
+    border-radius:var(--radius);
+    padding:24px 26px 26px;
+  }
+  .prelaunch .tag{
+    background:var(--ink);
+    color:var(--sun);
+    font-size:0.78rem;
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:999px;
+    flex-shrink:0;
+  }
+  .prelaunch p{margin:0; font-weight:700; color:var(--ink); font-size:0.95rem;}
+  .prelaunch .tag{display:inline-block;}
+  .notice-title{
+    font-family:'Zen Maru Gothic', sans-serif;
+    margin:14px 0 4px;
+    font-size:1.3rem;
+    font-weight:900;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .prelaunch .notice-lead{margin:0 0 16px;}
+  .notice-details{
+    background:var(--white);
+    border-radius:12px;
+    padding:14px 18px;
+    margin:0;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:10px 16px;
+    font-size:0.92rem;
+    color:var(--ink);
+  }
+  .notice-details dt{
+    font-weight:700;
+    color:var(--coral-deep);
     white-space:nowrap;
   }
-  .sync .dot{width:7px; height:7px; border-radius:50%; background:var(--leaf); flex-shrink:0;}
-  .sync.offline .dot{background:var(--coral);}
+  .notice-details dd{margin:0; line-height:1.6;}
+  .notice-details small{font-size:0.82rem; color:#584a3d;}
+  .notice-more{
+    display:inline-block;
+    margin-top:16px;
+    font-size:0.88rem;
+    font-weight:700;
+    color:var(--ink);
+    text-decoration:underline;
+    text-decoration-style:dashed;
+    text-underline-offset:4px;
+  }
+  .notice-more:hover{color:var(--indigo);}
+  .notice-item + .notice-item{
+    margin-top:22px;
+    padding-top:8px;
+    border-top:2px dashed var(--ink);
+  }
+  .notice-item[hidden],
+  .notice-empty[hidden]{display:none;}
+  .prelaunch .notice-empty{margin:14px 0 0; font-weight:400;}
 
-  .screen{display:none;}
-  .screen.active{display:block;}
-
-  /* ---- setup screen ---- */
-  .setup-card{
-    background:var(--card); border:1px solid var(--line); border-radius:18px;
-    padding:22px 18px; box-shadow:var(--shadow);
+  /* ---------- access ---------- */
+  .access .wrap{
+    display:grid; grid-template-columns:1fr 1.2fr; gap:40px; align-items:start;
   }
-  .setup-card h1{
-    font-family:'Zen Maru Gothic', sans-serif;
-    font-size:1.05rem; margin:0 0 4px;
+  .info-list{list-style:none; padding:0; margin:0 0 22px;}
+  .info-list li{
+    display:flex; gap:14px;
+    padding:14px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:0.96rem;
   }
-  .setup-card p.desc{
-    margin:0 0 16px; font-size:0.85rem; color:var(--ink-soft); line-height:1.6;
+  .info-list li:last-child{border-bottom:none;}
+  .info-list .label{
+    flex-shrink:0; width:76px;
+    font-weight:700; color:var(--indigo);
+    font-size:0.85rem; letter-spacing:0.04em;
   }
-  .name-row{
-    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  .info-list a{
+    color:var(--indigo);
+    font-weight:700;
+    text-decoration:underline;
+    text-decoration-style:dashed;
+    text-underline-offset:3px;
   }
-  .name-row .num{
-    width:24px; height:24px; border-radius:50%;
-    background:var(--sun); color:#fff; font-weight:700; font-size:0.75rem;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  .info-list a:hover{color:var(--coral-deep);}
+  .access-map{margin-top:40px;}
+  .map-frame{
+    position:relative;
+    border:2px dashed var(--indigo);
+    border-radius:var(--radius);
+    overflow:hidden;
+    aspect-ratio:4/3;
   }
-  .name-row input[type="text"]{
-    flex:1 1 auto; min-width:0;
-    padding:10px 12px; border-radius:10px; border:1px solid var(--line);
-    background:#fff; font-size:0.92rem; color:var(--ink);
-    font-family:'Noto Sans JP', sans-serif;
+  .map-frame iframe{width:100%; height:100%; border:0;}
+  .pin-badge{
+    position:absolute;
+    top:14px; left:14px;
+    background:var(--coral-deep);
+    color:var(--white);
+    font-weight:700;
+    font-size:0.8rem;
+    padding:6px 14px 6px 10px;
+    border-radius:999px;
+    display:flex; align-items:center; gap:4px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.18);
+    pointer-events:none;
   }
-  .name-row .cap-wrap{
-    display:flex; align-items:center; gap:4px; flex-shrink:0;
-  }
-  .name-row input[type="number"]{
-    width:64px;
-    padding:10px 8px; border-radius:10px; border:1px solid var(--line);
-    background:#fff; font-size:0.92rem; color:var(--ink); text-align:center;
-    font-family:'Noto Sans JP', sans-serif;
-  }
-  .name-row .cap-unit{font-size:0.72rem; color:var(--ink-soft); flex-shrink:0;}
-  .name-row input:focus{outline:2px solid var(--sun); outline-offset:1px;}
-  .primary-btn{
-    width:100%; margin-top:6px; padding:14px; border:none; border-radius:12px;
-    background:var(--sun-deep); color:#fff; font-weight:700; font-size:1rem;
-    font-family:'Zen Maru Gothic', sans-serif; cursor:pointer;
-    box-shadow:0 3px 0 #96650f;
-  }
-  .primary-btn:active{transform:translateY(2px); box-shadow:0 1px 0 #96650f;}
-  .field-error{color:var(--coral-deep); font-size:0.78rem; margin-top:-2px; margin-bottom:10px; display:none;}
-  .field-error.show{display:block;}
-
-  /* ---- count screen ---- */
-  .totalbar{
-    display:flex; gap:10px; margin-bottom:14px;
-  }
-  .totalbar .box{
-    flex:1; background:var(--card); border:1px solid var(--line); border-radius:14px;
-    padding:10px 14px; text-align:center;
-  }
-  .totalbar .box .lab{font-size:0.7rem; color:var(--ink-soft);}
-  .totalbar .box .val{font-family:'Zen Maru Gothic', sans-serif; font-size:1.4rem; font-weight:700; color:var(--sun-deep);}
-
-  .combo-btn{
-    width:100%; text-align:left; border:none; border-radius:16px;
-    padding:16px 18px; margin-bottom:16px; cursor:pointer;
-    background: var(--sun); color:#4A2E00;
-    box-shadow:0 3px 0 var(--sun-deep);
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-  }
-  .combo-btn:active{transform:translateY(2px); box-shadow:0 1px 0 var(--sun-deep);}
-  .combo-btn .t1{font-family:'Zen Maru Gothic', sans-serif; font-weight:700; font-size:1.05rem;}
-  .combo-btn .t2{font-size:0.75rem; opacity:0.85; margin-top:2px;}
-  .combo-btn .arrow{font-size:1.4rem; font-weight:700;}
-  .combo-btn:disabled{
-    background:#E7DFC9; color:#93887a; box-shadow:none; cursor:not-allowed;
-  }
-  .combo-note{
-    font-size:0.78rem; color:var(--coral-deep); margin:-10px 0 16px; text-align:center;
+  .map-caption{
+    margin-top:12px;
+    font-size:0.85rem;
+    color:#584a3d;
   }
 
-  .grid{
-    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;
+  /* ---------- connect ---------- */
+  .connect{
+    background:var(--indigo);
+    color:var(--cream);
+    text-align:center;
   }
-  .event-card{
-    background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:14px; display:flex; flex-direction:column; gap:8px;
-    position:relative; overflow:hidden;
+  .connect h2{color:var(--white);}
+  .connect .section-head{margin:0 auto 34px; text-align:center;}
+  .connect .section-head p{color:#d9dced;}
+  .connect .eyebrow{color:var(--sun);}
+  .connect .eyebrow::before{background:var(--sun);}
+  .ig-cta{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--sun); color:var(--ink);
+    padding:16px 34px;
+    border-radius:999px;
+    font-weight:700; font-size:1.05rem;
+    text-decoration:none;
+    border:2px solid var(--sun);
+    transition:transform 0.15s ease, background 0.15s ease;
   }
-  .event-card.full{border-color:var(--coral); background:#FFF3EF;}
-  .event-name{
-    font-family:'Zen Maru Gothic', sans-serif; font-weight:700; font-size:0.95rem;
-    line-height:1.3; min-height:2.4em; word-break:break-word;
-  }
-  .event-count{
-    font-family:'Zen Maru Gothic', sans-serif; font-size:1.5rem; font-weight:700;
-    color:var(--leaf-deep); line-height:1;
-  }
-  .event-count small{font-size:0.8rem; font-weight:500; color:var(--ink-soft);}
-  .event-remain{font-size:0.75rem; color:var(--ink-soft);}
-  .event-card.full .event-remain{color:var(--coral-deep); font-weight:700;}
-  .single-btn{
-    margin-top:auto; border:none; border-radius:10px; padding:11px;
-    background:var(--leaf); color:#fff; font-weight:700; font-size:0.9rem;
-    font-family:'Zen Maru Gothic', sans-serif; cursor:pointer;
-    box-shadow:0 2px 0 var(--leaf-deep);
-  }
-  .single-btn:active{transform:translateY(2px); box-shadow:none;}
-  .single-btn:disabled{background:#DCD5C4; color:#93887a; box-shadow:none; cursor:not-allowed;}
-  .edit-count-btn{
-    border:none; background:none; padding:2px 0; margin:0;
-    color:var(--ink-soft); font-size:0.72rem; text-decoration:underline;
-    cursor:pointer; font-family:'Noto Sans JP', sans-serif; align-self:flex-start;
-  }
-  .done-badge{
-    position:absolute; top:10px; right:10px;
-    background:var(--coral); color:#fff; font-size:0.66rem; font-weight:700;
-    padding:3px 8px; border-radius:999px;
+  .ig-cta:hover{background:var(--coral); border-color:var(--coral); transform:translateY(-2px);}
+
+  footer{
+    padding:34px 0;
+    text-align:center;
+    font-size:0.82rem;
+    color:#8a7c68;
   }
 
-  .controls{
-    display:flex; gap:10px; margin-top:6px;
+  @media (max-width: 880px){
+    .hero .wrap{grid-template-columns:1fr; text-align:left;}
+    .sun-illust{max-width:200px; margin:0;}
+    .card-grid{grid-template-columns:1fr;}
+    .about .wrap{grid-template-columns:1fr;}
+    .access .wrap{grid-template-columns:1fr;}
+    .info-strip{grid-template-columns:1fr;}
+    .bubbles{grid-template-columns:1fr;}
+    .nav-links{gap:14px;}
+    .nav-links span.txt{display:none;}
+    .brand-break{display:block;}
+    .brand{font-size:0.98rem;}
   }
-  .ghost-btn{
-    flex:1; padding:12px; border-radius:12px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-size:0.82rem; font-weight:500;
-    cursor:pointer; font-family:'Noto Sans JP', sans-serif;
-  }
-  .ghost-btn:disabled{color:#b3a893; cursor:not-allowed;}
-  .ghost-btn.warn{color:var(--coral-deep); border-color:var(--coral);}
-  .last-action{
-    text-align:center; font-size:0.75rem; color:var(--ink-soft); margin-top:10px;
-  }
-
-  .loading{
-    text-align:center; padding:60px 0; color:var(--ink-soft); font-size:0.9rem;
-  }
-  .config-warning{
-    background:#FFF3EF; border:1px solid var(--coral); color:var(--coral-deep);
-    border-radius:12px; padding:14px 16px; font-size:0.82rem; line-height:1.7;
-    max-width:640px; margin:0 auto 16px;
-  }
-  .config-warning code{background:#fff; padding:1px 5px; border-radius:4px;}
-
-  .modal-back{
-    display:none; position:fixed; inset:0; background:rgba(59,46,34,0.35);
-    align-items:center; justify-content:center; z-index:10; padding:20px;
-  }
-  .modal-back.show{display:flex;}
-  .modal{
-    background:var(--card); border-radius:16px; padding:20px; max-width:340px;
-    width:100%; text-align:center;
-  }
-  .modal p{font-size:0.9rem; line-height:1.6; margin:0 0 16px;}
-  .modal input[type="number"]{
-    width:100%; padding:12px; border-radius:10px; border:1px solid var(--line);
-    background:#fff; font-size:1.1rem; text-align:center; color:var(--ink);
-    margin-bottom:14px; font-family:'Noto Sans JP', sans-serif;
-  }
-  .modal .row{display:flex; gap:10px;}
-  .modal .row button{flex:1; padding:11px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-family:'Noto Sans JP', sans-serif;}
-  .modal .row .cancel{background:#EDE6D6; color:var(--ink);}
-  .modal .row .confirm{background:var(--coral); color:#fff;}
-
-  @media (max-width:380px){
-    .grid{grid-template-columns:1fr 1fr; gap:9px;}
-    .event-card{padding:11px;}
-    .name-row input[type="number"]{width:56px;}
+  @media (max-width: 560px){
+    section{padding:44px 0;}
+    .hero{padding:36px 0 40px;}
+    .access-map{margin-top:32px;}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <div class="brand">アトリエひなたぼっこ<small>チケット枚数管理</small></div>
-    <div class="sync" id="syncBadge"><span class="dot"></span><span id="syncText">読み込み中</span></div>
-  </header>
-
-  <div id="configWarning" class="config-warning" style="display:none;">
-    <strong>設定が必要です。</strong>このファイル内の <code>GAS_URL</code> に、Apps Scriptをデプロイして発行されたURLを貼り付けてから公開してください。
-  </div>
-
-  <div class="screen" id="loadingScreen">
-    <div class="loading">データを読み込んでいます…</div>
-  </div>
-
-  <!-- Setup screen -->
-  <div class="screen" id="setupScreen">
-    <div class="setup-card">
-      <h1 id="setupTitle">販売項目を設定</h1>
-      <p class="desc">項目名と上限枚数(こみこみ＋単品の合計がこの枚数で終了)を入力してください。使わない項目は空欄のままでかまいません(最大10項目)。ここで設定した内容は、このページを開いた全員と共有されます。</p>
-      <div id="nameInputs"></div>
-      <div class="field-error" id="setupError">項目名を入力した行には、上限枚数(1以上)も入力してください。</div>
-      <div class="field-error" id="setupErrorEmpty">項目を1つ以上入力してください。</div>
-      <button class="primary-btn" id="startBtn">この内容ではじめる</button>
-      <button class="ghost-btn" id="cancelEditBtn" style="margin-top:10px; display:none;">編集をやめて戻る</button>
+<header>
+  <nav class="wrap">
+    <a class="brand" href="#top">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="12" fill="#e8a33d"/>
+        <g stroke="#2b3a55" stroke-width="2" stroke-dasharray="1 5" stroke-linecap="round">
+          <line x1="20" y1="2" x2="20" y2="8"/>
+          <line x1="20" y1="32" x2="20" y2="38"/>
+          <line x1="2" y1="20" x2="8" y2="20"/>
+          <line x1="32" y1="20" x2="38" y2="20"/>
+          <line x1="7" y1="7" x2="11.5" y2="11.5"/>
+          <line x1="28.5" y1="28.5" x2="33" y2="33"/>
+          <line x1="33" y1="7" x2="28.5" y2="11.5"/>
+          <line x1="11.5" y1="28.5" x2="7" y2="33"/>
+        </g>
+      </svg>
+      <span class="brand-text">アトリエ<br class="brand-break">ひなたぼっこ</span>
+    </a>
+    <div class="nav-links">
+      <a href="#activities"><span class="txt">できること</span></a>
+      <a href="#info"><span class="txt">料金・時間</span></a>
+      <a href="#access"><span class="txt">アクセス</span></a>
+      <a href="news.html"><span class="txt">お知らせ</span></a>
+      <a class="ig-link" href="https://www.instagram.com/atelier.hinatabokko/" target="_blank" rel="noopener">Instagram</a>
     </div>
-  </div>
+  </nav>
+</header>
 
-  <!-- Count screen -->
-  <div class="screen" id="countScreen">
-    <div class="totalbar">
-      <div class="box"><div class="lab">本日の合計</div><div class="val" id="totalCount">0</div></div>
-      <div class="box"><div class="lab">完売項目</div><div class="val" id="fullCount">0 / 0</div></div>
+<main id="top">
+
+  <section class="bubbles-section">
+    <div class="wrap">
+      <div class="bubbles">
+        <div class="blob">自分で小物を作ってみたいけど、自宅にミシンがないし、ミシンを購入するほどでは…</div>
+        <div class="blob">子供や孫にはオリジナルのものを身に付けさせたいけど、一点ものは高いし…</div>
+        <div class="blob">気軽に一息つける場所はないかなぁ</div>
+      </div>
     </div>
+  </section>
 
-    <button class="combo-btn" id="comboBtn">
-      <span>
-        <span class="t1">コミコミチケット</span>
-        <span class="t2" id="comboSub">全項目 +1</span>
-      </span>
-      <span class="arrow">＋</span>
-    </button>
-    <p class="combo-note" id="comboNote" style="display:none;">一部の項目が完売のため、コミコミチケットは販売できません</p>
-
-    <div class="grid" id="eventGrid"></div>
-
-    <div class="controls">
-      <button class="ghost-btn" id="undoBtn" disabled>元に戻す</button>
-      <button class="ghost-btn" id="editNamesBtn">項目を編集</button>
-      <button class="ghost-btn warn" id="resetBtn">本日リセット</button>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">群馬県藤岡市 · 小さなアトリエ</p>
+        <h1>ミシンと布で作った小物たちが<br>「<span class="highlight">アトリエひなたぼっこ</span>」<br>でお待ちしています！</h1>
+        <p class="sub">ホッと一息、おしゃべりしながら、ほっこり時間を過ごしませんか？</p>
+        <p class="lead">
+          こんな想いを持った皆さんを、藤岡市藤岡の小さなアトリエでお迎えします。
+          布小物や洋服のオーダーメイドから、放課後の子どもたちの居場所まで、いろんな時間がゆっくり流れています。
+        </p>
+        <div class="cta-row">
+          <a class="btn solid" href="#activities">できることを見る</a>
+          <a class="btn ghost" href="#access">アクセス</a>
+        </div>
+      </div>
+      <svg class="sun-illust" viewBox="0 0 320 320" aria-hidden="true">
+        <circle cx="160" cy="160" r="70" fill="#e8a33d"/>
+        <g stroke="#2b3a55" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round">
+          <line x1="160" y1="30" x2="160" y2="60"/>
+          <line x1="160" y1="260" x2="160" y2="290"/>
+          <line x1="30" y1="160" x2="60" y2="160"/>
+          <line x1="260" y1="160" x2="290" y2="160"/>
+          <line x1="58" y1="58" x2="80" y2="80"/>
+          <line x1="240" y1="240" x2="262" y2="262"/>
+          <line x1="262" y1="58" x2="240" y2="80"/>
+          <line x1="80" y1="240" x2="58" y2="262"/>
+        </g>
+        <path d="M100 230 Q160 190 220 230" stroke="#2b3a55" stroke-width="3" fill="none" stroke-dasharray="1 8" stroke-linecap="round"/>
+        <circle cx="135" cy="150" r="5" fill="#3a2e27"/>
+        <circle cx="185" cy="150" r="5" fill="#3a2e27"/>
+      </svg>
     </div>
-    <div class="last-action" id="lastActionText"></div>
-  </div>
+  </section>
 
-</div>
+  <div class="stitch thick"></div>
 
-<div class="modal-back" id="modalBack">
-  <div class="modal">
-    <p id="modalText"></p>
-    <input type="number" id="modalInput" min="0" style="display:none;">
-    <div class="field-error" id="modalInputError">0以上、上限枚数以下の数値を入力してください。</div>
-    <div class="row">
-      <button class="cancel" id="modalCancel">キャンセル</button>
-      <button class="confirm" id="modalConfirm">実行する</button>
+  <section id="activities">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">できること</p>
+        <h2>アトリエでできること</h2>
+        <p>目的があってもなくても。どれか一つだけでも、いくつ組み合わせても構いません。</p>
+      </div>
+      <div class="card-grid">
+        <div class="tag-card">
+          <p class="num">01</p>
+          <h3>ミシン体験</h3>
+          <p>アトリエにあるミシンを使って、ご自身で小物作りに挑戦できます。ご希望に応じてスタッフがアドバイスします。</p>
+          <span class="badge">1時間1,000円</span>
+        </div>
+        <div class="tag-card">
+          <p class="num">02</p>
+          <h3>オーダーメイド</h3>
+          <p>オーダー制でオリジナル作品を注文できます(1,000円〜)。布はご持参ください。布選びのお手伝いもいたします。</p>
+          <span class="badge">1,000円〜</span>
+        </div>
+        <div class="tag-card">
+          <p class="num">03</p>
+          <h3>作品の販売</h3>
+          <p>作家さんの革細工など、一部小物の販売もしています。</p>
+          <span class="badge">委託販売</span>
+        </div>
+        <div class="tag-card">
+          <p class="num">04</p>
+          <h3>キッズルーム</h3>
+          <p>広々としたキッズルームを備えています。ベビーベッドもあります。小学生のお子さんも、放課後に遊びに来てね。</p>
+          <span class="badge">放課後の居場所</span>
+        </div>
+        <div class="tag-card">
+          <p class="num">05</p>
+          <h3>フリースペース</h3>
+          <p>用事がなくても大丈夫。お茶を飲みながらおしゃべりするだけの時間も、ここではステキな過ごしかたです。</p>
+          <span class="badge">お茶のサービスあり</span>
+        </div>
+        <div class="tag-card">
+          <p class="num">06</p>
+          <h3>手作りおやつの会</h3>
+          <p>月に1〜2回、季節のおやつをみんなで作る会を予定しています。開催日はInstagramでお知らせします。</p>
+          <span class="badge">月1〜2回・予定</span>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <div class="stitch"></div>
+
+  <section id="about" class="about">
+    <div class="wrap">
+      <p class="about-quote">「ひなたぼっこ」は、<br>陽だまりでのんびり過ごす時間のこと。</p>
+      <div class="about-body">
+        <p>
+          アトリエひなたぼっこは、ミシンのある小さな作業場でもあり、
+          お茶を飲みながらおしゃべりする場所でもあり、学校帰りの子どもたちが
+          ふらっと立ち寄れる場所でもあります。
+        </p>
+        <p>
+          「何かをしなければいけない場所」ではなく、
+          陽だまりのようにただ居られる場所でありたいと思っています。
+          気になったときに、気軽に覗いてみてください。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="stitch"></div>
+
+  <section id="info">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">ご利用について</p>
+        <h2>料金・時間・お問い合わせ</h2>
+      </div>
+      <div class="info-strip">
+        <div class="info-card">
+          <div class="icon">🌱</div>
+          <h3>料金</h3>
+          <dl>
+            <div><dt>ミシン利用料</dt><dd>1時間 1,000円</dd></div>
+            <div><dt>加工料</dt><dd>500円〜</dd></div>
+          </dl>
+          <p class="note">※オーダー作品は別途料金となります。</p>
+        </div>
+        <div class="info-card">
+          <div class="icon">🕐</div>
+          <h3>開いている時間</h3>
+          <dl>
+            <div><dt>平日</dt><dd>13:00-17:00</dd></div>
+            <div><dt>土曜日</dt><dd>9:00-12:00</dd></div>
+            <div><dt>日曜・祝日</dt><dd>お休み</dd></div>
+          </dl>
+          <p class="note">※臨時休業あり。最新情報はInstagramでご確認ください。<br>※夏休みと年末年始休業あります</p>
+        </div>
+        <div class="info-card">
+          <div class="icon">✉️</div>
+          <h3>お問い合わせ</h3>
+          <a class="tel-link" href="sms:07010648986">070-1064-8986</a>
+          <p class="note">※お問い合わせはショートメールでお願いします。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stitch"></div>
+
+  <section id="access">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">アクセス</p>
+        <h2 style="margin-bottom:26px;">場所</h2>
+        <ul class="info-list">
+          <li><span class="label">住所</span><span>〒375-0024<br>群馬県藤岡市藤岡827-14</span></li>
+          <li><span class="label">道順</span><span>JR・八高線 藤岡駅から徒歩約8分</span></li>
+          <li><span class="label">地図</span><span><a href="https://www.google.com/maps/search/?api=1&query=%E7%BE%A4%E9%A6%AC%E7%9C%8C%E8%97%A4%E5%B2%A1%E5%B8%82%E8%97%A4%E5%B2%A1827-14" target="_blank" rel="noopener">Googleマップで開く</a></span></li>
+        </ul>
+        <div class="prelaunch">
+          <span class="tag">お知らせ</span>
+
+          <!-- ===== これからのイベント =====
+               開催日の近い順に <div class="notice-item"> を並べます。
+               data-date に開催日(YYYY-MM-DD)を入れると、開催日の翌日から自動で非表示になります。
+               対象日が複数あるお知らせは、data-date に最後の日を入れ、最初の日の順番で並べます。
+               終わったイベントは、時間のあるときにこのブロックごと削除してください(news.html には残します)。 -->
+
+          <div class="notice-item" data-date="2026-11-24">
+            <h3 class="notice-title">11月の時間変更</h3>
+            <p class="notice-lead">下記の日は、アトリエはお休み、あそびばは時間を短くして開きます。</p>
+            <dl class="notice-details">
+              <dt>対象日</dt><dd>11月10日(火)、11月24日(火)</dd>
+              <dt>アトリエ</dt><dd>お休み</dd>
+              <dt>あそびば</dt><dd>16:15〜17:00<br><small>通常は15:00〜17:00です</small></dd>
+            </dl>
+          </div>
+
+          <div class="notice-item" data-date="2026-11-14">
+            <h3 class="notice-title">あそびばワークショップ</h3>
+            <p class="notice-lead">モールでキャラクターのキーホルダーを作ります！</p>
+            <dl class="notice-details">
+              <dt>日時</dt><dd>11月14日(土) 10時〜12時</dd>
+              <dt>場所</dt><dd>アトリエのあそびば</dd>
+              <dt>参加費</dt><dd>1キャラクターにつき300円</dd>
+              <dt>定員</dt><dd>先着6名<br><small>小学3年生以上は子どもだけでも参加OK</small></dd>
+              <dt>申込</dt><dd>スタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)で受け付けています。</dd>
+            </dl>
+          </div>
+
+          <div class="notice-item" data-date="2026-11-21">
+            <h3 class="notice-title">手作りおやつの日</h3>
+            <p class="notice-lead">あそびばで、さつまいものおやつをいただきます。</p>
+            <dl class="notice-details">
+              <dt>日時</dt><dd>11月21日(土) 10時〜12時</dd>
+              <dt>場所</dt><dd>アトリエのあそびば</dd>
+              <dt>メニュー</dt><dd>びっくりさつまいも、さつまいもとりんごの蒸しパン</dd>
+              <dt>材料</dt><dd><small>びっくりさつまいも：かぼちゃ、砂糖、バター、牛乳、塩、ごま、卵(卵は使わなくても作れます)<br>蒸しパン：小麦粉、さつまいも、りんご、砂糖、卵、ベーキングパウダー</small></dd>
+              <dt>申込</dt><dd>ご希望の時間枠を、近くのスタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)でお知らせください。</dd>
+            </dl>
+          </div>
+
+          <p class="notice-empty" hidden>現在予定しているイベントはありません。最新情報はInstagramでお知らせしています。</p>
+          <a class="notice-more" href="news.html">過去のお知らせを見る</a>
+        </div>
+      </div>
+      <div class="access-map">
+        <div class="map-frame">
+          <span class="pin-badge">📍 ココ</span>
+          <iframe
+            src="https://maps.google.com/maps?q=%E7%BE%A4%E9%A6%AC%E7%9C%8C%E8%97%A4%E5%B2%A1%E5%B8%82%E8%97%A4%E5%B2%A1827-14&output=embed"
+            title="アトリエひなたぼっこの地図"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+        <p class="map-caption">藤岡市藤岡827-14 / マツモトキヨシ様・ベルク様の近くです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="connect">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">つながる</p>
+        <h2>最新情報はInstagramで</h2>
+        <p>ワークショップやおやつの会の日程、アトリエの様子はInstagramで発信しています。</p>
+      </div>
+      <a class="ig-cta" href="https://www.instagram.com/atelier.hinatabokko/" target="_blank" rel="noopener">
+        Instagramをフォローする
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    &copy; アトリエひなたぼっこ
   </div>
-</div>
+</footer>
 
 <script>
-/* =========================================================
-   ここに、Apps Scriptを「ウェブアプリ」としてデプロイしたときに
-   発行される .../exec で終わるURLを貼り付けてください。
-   ========================================================= */
-var GAS_URL = "https://script.google.com/macros/s/AKfycby_bC9gfvLf-Fjbe48rXzDvkNmzi75Orax4Q4IP1HnnKEv7VvGMhVt7nWJRIEi2162V/exec";
-
-(function(){
-  var MAX_SLOTS = 10;
-  var POLL_MS = 4000;
-
-  var DEFAULTS = [
-    { name: 'パン', cap: 49 },
-    { name: 'くじ', cap: 50 },
-    { name: 'かき氷', cap: 80 },
-    { name: 'きゅうり', cap: 80 },
-    { name: 'たこやき', cap: 60 },
-    { name: 'アメリカンドッグ', cap: 65 },
-    { name: 'おもしろ釣り', cap: 74 }
-  ];
-
-  var isConfigured = GAS_URL && GAS_URL.indexOf('YOUR_') !== 0;
-
-  var events = null;     // array of {name, cap}
-  var counts = null;     // array of numbers, same length/order as events
-  var lastAction = null; // {type:'combo'|'single', eventIndex}
-  var lastKnownUpdatedAt = 0;
-  var pollTimer = null;
-  var lastLocalWrite = 0;
-  var pendingConfirm = null;
-  var inFlight = false;
-
-  var el = {
-    loadingScreen: document.getElementById('loadingScreen'),
-    setupScreen: document.getElementById('setupScreen'),
-    countScreen: document.getElementById('countScreen'),
-    configWarning: document.getElementById('configWarning'),
-    nameInputs: document.getElementById('nameInputs'),
-    setupError: document.getElementById('setupError'),
-    setupErrorEmpty: document.getElementById('setupErrorEmpty'),
-    startBtn: document.getElementById('startBtn'),
-    cancelEditBtn: document.getElementById('cancelEditBtn'),
-    setupTitle: document.getElementById('setupTitle'),
-    totalCount: document.getElementById('totalCount'),
-    fullCount: document.getElementById('fullCount'),
-    comboBtn: document.getElementById('comboBtn'),
-    comboSub: document.getElementById('comboSub'),
-    comboNote: document.getElementById('comboNote'),
-    eventGrid: document.getElementById('eventGrid'),
-    undoBtn: document.getElementById('undoBtn'),
-    editNamesBtn: document.getElementById('editNamesBtn'),
-    resetBtn: document.getElementById('resetBtn'),
-    lastActionText: document.getElementById('lastActionText'),
-    syncBadge: document.getElementById('syncBadge'),
-    syncText: document.getElementById('syncText'),
-    modalBack: document.getElementById('modalBack'),
-    modalText: document.getElementById('modalText'),
-    modalInput: document.getElementById('modalInput'),
-    modalInputError: document.getElementById('modalInputError'),
-    modalCancel: document.getElementById('modalCancel'),
-    modalConfirm: document.getElementById('modalConfirm')
-  };
-
-  if(!isConfigured){
-    el.configWarning.style.display = 'block';
-    el.syncText.textContent = '未設定';
-    el.syncBadge.classList.add('offline');
-    return; // don't attempt to call a placeholder URL
-  }
-
-  function setSyncStatus(ok){
-    el.syncBadge.classList.toggle('offline', !ok);
-    var t = new Date();
-    var hh = String(t.getHours()).padStart(2,'0');
-    var mm = String(t.getMinutes()).padStart(2,'0');
-    el.syncText.textContent = ok ? ('共有中 ' + hh + ':' + mm) : '通信できません';
-  }
-
-  // GET: read-only fetch of current state
-  function fetchState(){
-    return fetch(GAS_URL + '?action=getState', { method:'GET' })
-      .then(function(r){ return r.json(); })
-      .then(function(json){ setSyncStatus(true); return json; })
-      .catch(function(){ setSyncStatus(false); return null; });
-  }
-
-  // POST: send a mutating action, spreadsheet applies it and returns the new state.
-  // text/plain avoids a CORS preflight, which Apps Script web apps don't handle.
-  function callAction(action, payload){
-    var body = Object.assign({ action: action }, payload || {});
-    lastLocalWrite = Date.now();
-    return fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(body)
-    })
-      .then(function(r){ return r.json(); })
-      .then(function(json){ setSyncStatus(true); return json; })
-      .catch(function(){ setSyncStatus(false); return null; });
-  }
-
-  function applyStateToView(state){
-    if(!state || state.error) return;
-    events = state.events || null;
-    counts = state.counts || null;
-    lastAction = state.lastAction || null;
-    lastKnownUpdatedAt = state.updatedAt || 0;
-    if(events){ renderCount(); } else { renderSetup(false); }
-  }
-
-  function showScreen(name){
-    ['loadingScreen','setupScreen','countScreen'].forEach(function(id){
-      document.getElementById(id).classList.toggle('active', id === name);
-    });
-  }
-
-  function buildNameInputs(existingEvents){
-    el.nameInputs.innerHTML = '';
-    var seed = existingEvents;
-    if(!seed){
-      seed = [];
-      for(var d=0; d<MAX_SLOTS; d++){
-        seed.push(d < DEFAULTS.length ? DEFAULTS[d] : { name:'', cap:'' });
-      }
+  // お知らせ欄：開催日(data-date)を過ぎたイベントを非表示にする
+  (function(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var items = document.querySelectorAll('.notice-item[data-date]');
+    var shown = 0;
+    for (var k = 0; k < items.length; k++){
+      var p = items[k].getAttribute('data-date').split('-');
+      var day = new Date(+p[0], +p[1] - 1, +p[2]);
+      if (day < today){ items[k].hidden = true; } else { shown++; }
     }
-    for(var i=0;i<MAX_SLOTS;i++){
-      var item = seed[i] || { name:'', cap:'' };
-      var row = document.createElement('div');
-      row.className = 'name-row';
-
-      var num = document.createElement('div');
-      num.className = 'num';
-      num.textContent = i+1;
-      row.appendChild(num);
-
-      var nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.maxLength = 14;
-      nameInput.placeholder = '項目名（空欄で未使用）';
-      nameInput.value = item.name || '';
-      nameInput.id = 'nameInput' + i;
-      row.appendChild(nameInput);
-
-      var capWrap = document.createElement('div');
-      capWrap.className = 'cap-wrap';
-      var capInput = document.createElement('input');
-      capInput.type = 'number';
-      capInput.min = '1';
-      capInput.placeholder = '上限';
-      capInput.value = (item.cap || item.cap === 0) ? item.cap : '';
-      capInput.id = 'capInput' + i;
-      var unit = document.createElement('span');
-      unit.className = 'cap-unit';
-      unit.textContent = '枚';
-      capWrap.appendChild(capInput);
-      capWrap.appendChild(unit);
-      row.appendChild(capWrap);
-
-      el.nameInputs.appendChild(row);
+    if (shown === 0){
+      var empty = document.querySelector('.notice-empty');
+      if (empty) empty.hidden = false;
     }
-  }
-
-  function renderSetup(isEdit){
-    el.setupTitle.textContent = isEdit ? '販売項目を編集' : '販売項目を設定';
-    el.startBtn.textContent = isEdit ? 'この内容で保存する' : 'この内容ではじめる';
-    el.cancelEditBtn.style.display = isEdit ? 'block' : 'none';
-    buildNameInputs(events);
-    el.setupError.classList.remove('show');
-    el.setupErrorEmpty.classList.remove('show');
-    showScreen('setupScreen');
-  }
-
-  function renderCount(){
-    var n = events.length;
-    var total = counts.reduce(function(a,b){return a+b;}, 0);
-    var fullList = counts.map(function(c,i){ return c >= events[i].cap; });
-    var fullN = fullList.filter(Boolean).length;
-    var anyFull = fullN > 0;
-
-    el.totalCount.textContent = total;
-    el.fullCount.textContent = fullN + ' / ' + n;
-    el.comboSub.textContent = '全' + n + '項目 +1';
-
-    el.comboBtn.disabled = anyFull;
-    el.comboNote.style.display = anyFull ? 'block' : 'none';
-
-    el.eventGrid.innerHTML = '';
-    for(var i=0;i<n;i++){
-      var full = fullList[i];
-      var cap = events[i].cap;
-      var card = document.createElement('div');
-      card.className = 'event-card' + (full ? ' full' : '');
-
-      var nameEl = document.createElement('div');
-      nameEl.className = 'event-name';
-      nameEl.textContent = events[i].name;
-      card.appendChild(nameEl);
-
-      if(full){
-        var badge = document.createElement('div');
-        badge.className = 'done-badge';
-        badge.textContent = '本日終了';
-        card.appendChild(badge);
-      }
-
-      var countEl = document.createElement('div');
-      countEl.className = 'event-count';
-      countEl.innerHTML = counts[i] + ' <small>/ ' + cap + '</small>';
-      card.appendChild(countEl);
-
-      var remainEl = document.createElement('div');
-      remainEl.className = 'event-remain';
-      remainEl.textContent = full ? '完売しました' : ('残り ' + (cap - counts[i]) + ' 枚');
-      card.appendChild(remainEl);
-
-      var editBtn = document.createElement('button');
-      editBtn.className = 'edit-count-btn';
-      editBtn.textContent = '数値を編集';
-      editBtn.addEventListener('click', function(idx){
-        return function(){ openCountEditModal(idx); };
-      }(i));
-      card.appendChild(editBtn);
-
-      var btn = document.createElement('button');
-      btn.className = 'single-btn';
-      btn.textContent = '+1 販売';
-      btn.disabled = full;
-      btn.addEventListener('click', function(idx){
-        return function(){ handleSingle(idx); };
-      }(i));
-      card.appendChild(btn);
-
-      el.eventGrid.appendChild(card);
-    }
-
-    el.undoBtn.disabled = !lastAction;
-    if(lastAction){
-      var label = lastAction.type === 'combo' ? 'コミコミチケット' : (events[lastAction.eventIndex] ? events[lastAction.eventIndex].name : '');
-      el.lastActionText.textContent = '直前の操作: ' + label;
-    } else {
-      el.lastActionText.textContent = '';
-    }
-
-    showScreen('countScreen');
-  }
-
-  async function handleSingle(index){
-    if(!events || !counts || inFlight) return;
-    inFlight = true;
-    var result = await callAction('single', { index: index });
-    inFlight = false;
-    applyStateToView(result);
-  }
-
-  async function handleCombo(){
-    if(!events || !counts || inFlight) return;
-    var anyFull = counts.some(function(c,i){ return c >= events[i].cap; });
-    if(anyFull) return;
-    inFlight = true;
-    var result = await callAction('combo');
-    inFlight = false;
-    applyStateToView(result);
-  }
-
-  async function handleUndo(){
-    if(!lastAction || inFlight) return;
-    inFlight = true;
-    var result = await callAction('undo');
-    inFlight = false;
-    applyStateToView(result);
-  }
-
-  function openModal(text, onConfirm){
-    el.modalText.textContent = text;
-    el.modalInput.style.display = 'none';
-    el.modalInputError.classList.remove('show');
-    pendingConfirm = onConfirm;
-    el.modalBack.classList.add('show');
-  }
-  function closeModal(){
-    el.modalBack.classList.remove('show');
-    el.modalInput.style.display = 'none';
-    el.modalInputError.classList.remove('show');
-    pendingConfirm = null;
-  }
-  el.modalCancel.addEventListener('click', function(){ closeModal(); });
-  el.modalConfirm.addEventListener('click', function(){
-    var fn = pendingConfirm;
-    if(fn) fn();
-  });
-
-  function openCountEditModal(eventIndex){
-    var ev = events[eventIndex];
-    el.modalText.textContent = '「' + ev.name + '」の現在の枚数を入力してください（上限 ' + ev.cap + ' 枚）。';
-    el.modalInput.style.display = 'block';
-    el.modalInput.min = '0';
-    el.modalInput.max = String(ev.cap);
-    el.modalInput.value = counts[eventIndex];
-    el.modalInputError.classList.remove('show');
-    pendingConfirm = async function(){
-      var raw = el.modalInput.value.trim();
-      var num = parseInt(raw, 10);
-      if(raw === '' || isNaN(num) || num < 0 || num > ev.cap){
-        el.modalInputError.classList.add('show');
-        return;
-      }
-      closeModal();
-      var result = await callAction('setCount', { index: eventIndex, value: num });
-      applyStateToView(result);
-    };
-    el.modalBack.classList.add('show');
-  }
-
-  el.startBtn.addEventListener('click', async function(){
-    var newEvents = [];
-    var hasNamedWithoutCap = false;
-
-    for(var i=0;i<MAX_SLOTS;i++){
-      var nameVal = document.getElementById('nameInput'+i).value.trim();
-      var capRaw = document.getElementById('capInput'+i).value.trim();
-      if(!nameVal) continue;
-      var capNum = parseInt(capRaw, 10);
-      if(!capRaw || isNaN(capNum) || capNum <= 0){
-        hasNamedWithoutCap = true;
-        continue;
-      }
-      newEvents.push({ name: nameVal, cap: capNum });
-    }
-
-    if(hasNamedWithoutCap){
-      el.setupError.classList.add('show');
-      el.setupErrorEmpty.classList.remove('show');
-      return;
-    }
-    if(newEvents.length === 0){
-      el.setupErrorEmpty.classList.add('show');
-      el.setupError.classList.remove('show');
-      return;
-    }
-    el.setupError.classList.remove('show');
-    el.setupErrorEmpty.classList.remove('show');
-
-    var result = await callAction('setConfig', { events: newEvents });
-    applyStateToView(result);
-  });
-
-  el.cancelEditBtn.addEventListener('click', function(){
-    if(events){ renderCount(); }
-  });
-
-  el.editNamesBtn.addEventListener('click', function(){
-    renderSetup(true);
-  });
-
-  el.undoBtn.addEventListener('click', handleUndo);
-  el.comboBtn.addEventListener('click', handleCombo);
-
-  el.resetBtn.addEventListener('click', function(){
-    openModal('本日の販売数をすべて0にリセットします。この操作は取り消せません。よろしいですか?', async function(){
-      closeModal();
-      var result = await callAction('reset');
-      applyStateToView(result);
-    });
-  });
-
-  function startPolling(){
-    if(pollTimer) clearInterval(pollTimer);
-    pollTimer = setInterval(async function(){
-      if(inFlight) return;
-      if(Date.now() - lastLocalWrite < 1500) return;
-      var state = await fetchState();
-      if(state && !state.error && state.updatedAt !== lastKnownUpdatedAt){
-        applyStateToView(state);
-      }
-    }, POLL_MS);
-  }
-
-  async function init(){
-    showScreen('loadingScreen');
-    var state = await fetchState();
-    if(state){
-      applyStateToView(state);
-    } else {
-      renderSetup(false);
-    }
-    startPolling();
-  }
-
-  init();
-})();
+  })();
 </script>
+
 </body>
 </html>
