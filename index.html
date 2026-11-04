@@ -362,6 +362,14 @@
     text-underline-offset:4px;
   }
   .notice-more:hover{color:var(--indigo);}
+  .notice-item + .notice-item{
+    margin-top:22px;
+    padding-top:8px;
+    border-top:2px dashed var(--ink);
+  }
+  .notice-item[hidden],
+  .notice-empty[hidden]{display:none;}
+  .prelaunch .notice-empty{margin:14px 0 0; font-weight:400;}
 
   /* ---------- access ---------- */
   .access .wrap{
@@ -664,15 +672,48 @@
         </ul>
         <div class="prelaunch">
           <span class="tag">お知らせ</span>
-          <h3 class="notice-title">あそびばワークショップ</h3>
-          <p class="notice-lead">モールでキャラクターのキーホルダーを作ります！</p>
-          <dl class="notice-details">
-            <dt>日時</dt><dd>11月14日(土) 10時〜12時</dd>
-            <dt>場所</dt><dd>アトリエのあそびば</dd>
-            <dt>参加費</dt><dd>1キャラクターにつき300円</dd>
-            <dt>定員</dt><dd>先着6名<br><small>小学3年生以上は子どもだけでも参加OK</small></dd>
-            <dt>申込</dt><dd>スタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)で受け付けています。</dd>
-          </dl>
+
+          <!-- ===== これからのイベント =====
+               開催日の近い順に <div class="notice-item"> を並べます。
+               data-date に開催日(YYYY-MM-DD)を入れると、開催日の翌日から自動で非表示になります。
+               対象日が複数あるお知らせは、data-date に最後の日を入れ、最初の日の順番で並べます。
+               終わったイベントは、時間のあるときにこのブロックごと削除してください(news.html には残します)。 -->
+
+          <div class="notice-item" data-date="2026-11-24">
+            <h3 class="notice-title">11月の時間変更</h3>
+            <p class="notice-lead">下記の日は、アトリエはお休み、あそびばは時間を短くして開きます。</p>
+            <dl class="notice-details">
+              <dt>対象日</dt><dd>11月10日(火)、11月24日(火)</dd>
+              <dt>アトリエ</dt><dd>お休み</dd>
+              <dt>あそびば</dt><dd>16:15〜17:00<br><small>通常は15:00〜17:00です</small></dd>
+            </dl>
+          </div>
+
+          <div class="notice-item" data-date="2026-11-14">
+            <h3 class="notice-title">あそびばワークショップ</h3>
+            <p class="notice-lead">モールでキャラクターのキーホルダーを作ります！</p>
+            <dl class="notice-details">
+              <dt>日時</dt><dd>11月14日(土) 10時〜12時</dd>
+              <dt>場所</dt><dd>アトリエのあそびば</dd>
+              <dt>参加費</dt><dd>1キャラクターにつき300円</dd>
+              <dt>定員</dt><dd>先着6名<br><small>小学3年生以上は子どもだけでも参加OK</small></dd>
+              <dt>申込</dt><dd>スタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)で受け付けています。</dd>
+            </dl>
+          </div>
+
+          <div class="notice-item" data-date="2026-11-21">
+            <h3 class="notice-title">手作りおやつの日</h3>
+            <p class="notice-lead">あそびばで、さつまいものおやつをいただきます。</p>
+            <dl class="notice-details">
+              <dt>日時</dt><dd>11月21日(土) 10時〜12時</dd>
+              <dt>場所</dt><dd>アトリエのあそびば</dd>
+              <dt>メニュー</dt><dd>びっくりさつまいも、さつまいもとりんごの蒸しパン</dd>
+              <dt>材料</dt><dd><small>びっくりさつまいも：かぼちゃ、砂糖、バター、牛乳、塩、ごま、卵(卵は使わなくても作れます)<br>蒸しパン：小麦粉、さつまいも、りんご、砂糖、卵、ベーキングパウダー</small></dd>
+              <dt>申込</dt><dd>ご希望の時間枠を、近くのスタッフに声をかけるか、InstagramのDM、お電話(070-1064-8986)でお知らせください。</dd>
+            </dl>
+          </div>
+
+          <p class="notice-empty" hidden>現在予定しているイベントはありません。最新情報はInstagramでお知らせしています。</p>
           <a class="notice-more" href="news.html">過去のお知らせを見る</a>
         </div>
       </div>
@@ -711,6 +752,24 @@
     &copy; アトリエひなたぼっこ
   </div>
 </footer>
+
+<script>
+  // お知らせ欄：開催日(data-date)を過ぎたイベントを非表示にする
+  (function(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var items = document.querySelectorAll('.notice-item[data-date]');
+    var shown = 0;
+    for (var k = 0; k < items.length; k++){
+      var p = items[k].getAttribute('data-date').split('-');
+      var day = new Date(+p[0], +p[1] - 1, +p[2]);
+      if (day < today){ items[k].hidden = true; } else { shown++; }
+    }
+    if (shown === 0){
+      var empty = document.querySelector('.notice-empty');
+      if (empty) empty.hidden = false;
+    }
+  })();
+</script>
 
 </body>
 </html>
